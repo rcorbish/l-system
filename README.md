@@ -16,7 +16,9 @@ A, B ... V draw a line forward at the current angle, then recursively call the s
 
 Use the presets to see example grammars.
 
-### Warning - do not set recursion depth too large, depending on the rules you define you may run out of memory.
+### Warning 
+
+Do not set recursion depth too large, depending on the rules you define you may run out of memory.
 
 ## Licence 
 
