@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<canvas id="l-system" width="800" height="600"></canvas>
+
+<script>
+
+function LindenmayerSystem( rules, turn ) {
+
+	this.x = 0 ;
+	this.y = 0 ;
+	this.angle = 0 ;
+	this.turn = turn * Math.PI / 180.0 ;
+	this.rules = rules ;
+	this.stack = [] ;
+	this.dist = 1.4 ;
+	
+	this.process = function( rule, depth, coords ) {
+				
+		for( var i=0 ; i<rule.length ; i++ ) {
+			var instruction = rule[i] ;
+			var rule_sequence = this.rules[instruction] ;
+			if( depth===0 || !rule_sequence ) {
+				switch ( instruction ) {
+				case '+': this.angle -= this.turn ; break ;
+				case '-': this.angle += this.turn ; break ;
+				case '[': this.push() ; break ;
+				case ']': this.pop(coords) ; break ;
+				case 'W': break ;
+				case 'X': break ;
+				case 'Y': break ;
+				case 'Z': break ;
+				default: this.draw_forward( coords ) ; break ;
+				}
+			}
+			if( depth>0 && rule_sequence ) {
+				this.process( rule_sequence, depth-1, coords ) ; 
+			}
+		}
+	} ;
+
+	this.push = function() {
+		this.stack.push( { x: this.x, y: this.y, angle: this.angle } ) ;
+	} ;
+
+	this.pop = function(coords) {
+		if( this.stack.length < 1 ) { throw new Error( "Popping an empty stack" ) ; }
+		var stack_top = this.stack.splice( this.stack.length-1, 1 )[0] ;
+		this.x = stack_top.x ;
+		this.y = stack_top.y ;
+		this.angle = stack_top.angle ;
+		coords.push( { pop: true, x:this.x, y:this.y } ) ;
+	} ;
+
+	this.draw_forward = function( coords ) {
+		this.x += Math.cos( this.angle ) ;
+		this.y += Math.sin( this.angle ) ;
+		coords.push( { x:this.x, y:this.y } ) ;
+	} ;
+
+	this.move_forward = function( coords ) {
+		this.x = Math.cos( this.angle ) ;
+		this.y = Math.sin( this.angle ) ;
+//		this.ctx.moveTo( this.x, this.y ) ;
+	} ;
+
+}
+function redraw(event) {
+
+	event.preventDefault() ;
+
+	var recursionDepthText = document.getElementById('recursion-depth');
+	var recursionDepth = recursionDepthText.value ;
+
+	var turnAngleText = document.getElementById('turn-angle');
+	var turnAngle = turnAngleText.value ;
+
+	var startRule = null ;
+	var rulesText = document.getElementById('rules');
+	var rules = {} ;
+	for( var ruleLine of rulesText.value.split("\n" ) ) {
+		var ruleName = ruleLine[0] ;
+		startRule = startRule || ruleName ;
+		rules[ruleName] = ruleLine.slice(1).trim() ;
+	}		
+
+	var canvas = document.getElementById('l-system');
+	var ctx = canvas.getContext('2d');
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.beginPath();
+
+	var system = new LindenmayerSystem( rules, turnAngle ) ;
+	
+	var coords = [] ;
+	system.process( startRule, recursionDepth, coords ) ;
+	
+	var minx = 999999 ;
+	var maxx = -999999 ;
+	var miny = 999999 ;
+	var maxy = -999999 ;
+	
+	for( var i=0 ; i<coords.length ; i++ ) {
+		if( !coords[i].pop ) {
+			minx = Math.min(minx, coords[i].x ) ; 
+			maxx = Math.max(maxx, coords[i].x ) ;  
+			miny = Math.min(miny, coords[i].y ) ; 
+			maxy = Math.max(maxy, coords[i].y ) ;
+		} 
+	}	
+	var dx = maxx - minx ;
+	var dy = maxy - miny ;
+	
+	var scalex = canvas.width / dx ;
+	var scaley = canvas.height / dy ;
+	
+	ctx.moveTo( (coords[0].x-minx)* scalex, (coords[0].y-miny) * scaley ) ;
+	  
+	for( var i=1 ; i<coords.length ; i++ ) {
+		if( coords[i].pop ) {
+			ctx.moveTo( (coords[i].x-minx)* scalex, (coords[i].y-miny) * scaley ) ;  
+		} else {
+			ctx.lineTo( (coords[i].x-minx)* scalex, (coords[i].y-miny) * scaley ) ;
+		}  
+	}	
+	ctx.stroke();
+	
+	return false ;
+}
+
+function preset(selection) {
+	var opt = selection.value ;
+	var recursionDepthText = document.getElementById('recursion-depth');
+	var turnAngleText = document.getElementById('turn-angle');
+	var rulesText = document.getElementById('rules');
+	if( opt === 'grass' ) {
+		rulesText.value="X F−[[X]+X]+F[+FX]−X\nF FF" ;
+		turnAngleText.value = 25 ;
+		recursionDepthText.value = 6 ;		
+	} else if( opt === 'dragon' ) {
+		rulesText.value="X X+YF+\nY -FX-Y" ;
+		turnAngleText.value = 90 ;
+		recursionDepthText.value = 12 ;		
+	} else if( opt === 'triangle' ) {
+		rulesText.value="A +B-A-B+\nB -A+B+A-" ;
+		turnAngleText.value = 60 ;
+		recursionDepthText.value = 10 ;		
+	} else if( opt === 'tree' ) {
+		rulesText.value="A B[-A]+A\nB BB" 
+		turnAngleText.value = 45 ;
+		recursionDepthText.value = 10 ;		
+	} else {
+		rulesText.value="" ;
+		turnAngleText.value = "" ;
+		recursionDepthText.value = "" ;		
+	}	
+}
+</script>
+
+<form>
+<textarea id='rules' rows='8' cols='20' placeholder='enter the l-system rules use WXYZ for non-drawing elements'></textarea>
+<input type="number" id='turn-angle' placeholder='Turn angle (degrees)'></input>
+<input type="number" id='recursion-depth' placeholder='Recursion depth - careful - exponential'></input>
+<button onclick='redraw(event)'>Draw</button>
+<select onchange='preset(this)'>
+	<option>select</option>
+	<option>grass</option>
+	<option>dragon</option>
+	<option>triangle</option>
+	<option>tree</option>
+</select>
+</form>
+</body>
+</html>
