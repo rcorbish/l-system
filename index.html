@@ -79,7 +79,7 @@ function redraw(event) {
 	event.preventDefault() ;
 
 	var recursionDepthText = document.getElementById('recursion-depth');
-	var recursionDepth = recursionDepthText.value ;
+	var recursionDepthMax = recursionDepthText.value ;
 
 	var turnAngleText = document.getElementById('turn-angle');
 	var turnAngle = turnAngleText.value ;
@@ -98,44 +98,53 @@ function redraw(event) {
 
 	var canvas = document.getElementById('l-system');
 	var ctx = canvas.getContext('2d');
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.beginPath();
 
-	var system = new LindenmayerSystem( rules, turnAngle, startAngle ) ;
+	drawRecursion( 1, recursionDepthMax ) ;
 	
-	var coords = [] ;
-	system.process( startRule, recursionDepth, coords ) ;
+	function drawRecursion( recursionDepth, recursionDepthMax ) {
 	
-	var minx = 999999 ;
-	var maxx = -999999 ;
-	var miny = 999999 ;
-	var maxy = -999999 ;
-	
-	for( var i=0 ; i<coords.length ; i++ ) {
-		if( !coords[i].pop ) {
-			minx = Math.min(minx, coords[i].x ) ; 
-			maxx = Math.max(maxx, coords[i].x ) ;  
-			miny = Math.min(miny, coords[i].y ) ; 
-			maxy = Math.max(maxy, coords[i].y ) ;
-		} 
-	}	
-	var dx = maxx - minx ;
-	var dy = maxy - miny ;
-	
-	var scalex = canvas.width / dx ;
-	var scaley = canvas.height / dy ;
-	
-	ctx.moveTo( (coords[0].x-minx)* scalex, (coords[0].y-miny) * scaley ) ;
-	  
-	for( var i=1 ; i<coords.length ; i++ ) {
-		if( coords[i].pop ) {
-			ctx.moveTo( (coords[i].x-minx)* scalex, (coords[i].y-miny) * scaley ) ;  
-		} else {
-			ctx.lineTo( (coords[i].x-minx)* scalex, (coords[i].y-miny) * scaley ) ;
-		}  
-	}	
-	ctx.stroke();
-	
+		var system = new LindenmayerSystem( rules, turnAngle, startAngle ) ;
+		
+		var coords = [] ;
+		system.process( startRule, recursionDepth, coords ) ;
+		
+		var minx = 999999 ;
+		var maxx = -999999 ;
+		var miny = 999999 ;
+		var maxy = -999999 ;
+		
+		for( var i=0 ; i<coords.length ; i++ ) {
+			if( !coords[i].pop ) {
+				minx = Math.min(minx, coords[i].x ) ; 
+				maxx = Math.max(maxx, coords[i].x ) ;  
+				miny = Math.min(miny, coords[i].y ) ; 
+				maxy = Math.max(maxy, coords[i].y ) ;
+			} 
+		}	
+		var dx = maxx - minx ;
+		var dy = maxy - miny ;
+		
+		var scalex = canvas.width / dx ;
+		var scaley = canvas.height / dy ;
+
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.beginPath();
+		ctx.moveTo( (coords[0].x-minx)* scalex, (coords[0].y-miny) * scaley ) ;
+		  
+		for( var i=1 ; i<coords.length ; i++ ) {
+			if( coords[i].pop ) {
+				ctx.moveTo( (coords[i].x-minx)* scalex, (coords[i].y-miny) * scaley ) ;  
+			} else {
+				ctx.lineTo( (coords[i].x-minx)* scalex, (coords[i].y-miny) * scaley ) ;
+			}  
+		}	
+		ctx.stroke();
+		if( recursionDepth<recursionDepthMax ) {
+			setTimeout( function() { drawRecursion(recursionDepth+1,recursionDepthMax) ; }, 150) ;
+		}
+		
+	}
+		
 	return false ;
 }
 
