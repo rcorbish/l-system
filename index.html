@@ -177,6 +177,11 @@ function preset(selection) {
 		turnAngleText.value = 45 ;
 		recursionDepthText.value = 10 ;		
 		startAngleText.value = 270 ;
+	} else if( opt === 'circle' ) {
+		rulesText.value="A -AA" 
+		turnAngleText.value = 1.40625 ;
+		recursionDepthText.value = 8 ;		
+		startAngleText.value = "" ;
 	} else {
 		rulesText.value="" ;
 		turnAngleText.value = "" ;
@@ -193,6 +198,12 @@ function preset(selection) {
 		<div id='right'>
 			<form>
 				<textarea id='rules' rows='8' cols='20'
+					title="rule syntax: rule_name<space>rules [rule_name is 1 letter]
+					a rule (except W,X,Y&Z) draws a line forward
+					a + turns left, a - turns right
+					[] mean remember & restore the line state.
+					Recursion is the key: try A -AA, keep turning right: should get a circle?
+					The reason for double A means we only evaluate an A when we hit recursion bottom"
 					placeholder='enter the l-system rules use WXYZ for non-drawing elements'></textarea>
 				<input type="number" id='turn-angle'
 					placeholder='Turn angle (degrees)'></input> 
@@ -209,6 +220,7 @@ function preset(selection) {
 					<option>dragon</option>
 					<option>triangle</option>
 					<option>tree</option>
+					<option>circle</option>
 				</select>
 			</form>
 		</div>
