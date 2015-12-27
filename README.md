@@ -1,7 +1,7 @@
 
 # L-System
 
-This page explores fractals defined with the Lindenmayer grammar.
+This page explores fractals defined with the [Lindenmayer](https://en.wikipedia.org/wiki/L-system) grammar.
 
 The grammar is recursive and supports drawing, moving and turning .
 

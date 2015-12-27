@@ -3,18 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<style>
+html { margin: 0; background-color: navajoWhite ; color: navy ; }
+#main{width:100%;}
+#left{float:left;width:auto;}
+#right{float:right;width:200px;}
+</style>
 </head>
 <body>
 
-<canvas id="l-system" width="800" height="600"></canvas>
-
 <script>
 
-function LindenmayerSystem( rules, turn ) {
+function LindenmayerSystem( rules, turn, startAngle ) {
 
 	this.x = 0 ;
 	this.y = 0 ;
-	this.angle = 0 ;
+	this.angle = (startAngle * Math.PI / 180.0) || 0 ;
 	this.turn = turn * Math.PI / 180.0 ;
 	this.rules = rules ;
 	this.stack = [] ;
@@ -80,6 +84,9 @@ function redraw(event) {
 	var turnAngleText = document.getElementById('turn-angle');
 	var turnAngle = turnAngleText.value ;
 
+	var startAngleText = document.getElementById('start-angle');
+	var startAngle = startAngleText.value ;
+
 	var startRule = null ;
 	var rulesText = document.getElementById('rules');
 	var rules = {} ;
@@ -94,7 +101,7 @@ function redraw(event) {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	ctx.beginPath();
 
-	var system = new LindenmayerSystem( rules, turnAngle ) ;
+	var system = new LindenmayerSystem( rules, turnAngle, startAngle ) ;
 	
 	var coords = [] ;
 	system.process( startRule, recursionDepth, coords ) ;
@@ -136,43 +143,64 @@ function preset(selection) {
 	var opt = selection.value ;
 	var recursionDepthText = document.getElementById('recursion-depth');
 	var turnAngleText = document.getElementById('turn-angle');
+	var startAngleText = document.getElementById('start-angle');
 	var rulesText = document.getElementById('rules');
 	if( opt === 'grass' ) {
 		rulesText.value="X F−[[X]+X]+F[+FX]−X\nF FF" ;
 		turnAngleText.value = 25 ;
 		recursionDepthText.value = 6 ;		
+		startAngleText.value = -60 ;
 	} else if( opt === 'dragon' ) {
 		rulesText.value="X X+YF+\nY -FX-Y" ;
 		turnAngleText.value = 90 ;
 		recursionDepthText.value = 12 ;		
+		startAngleText.value = 0 ;
 	} else if( opt === 'triangle' ) {
 		rulesText.value="A +B-A-B+\nB -A+B+A-" ;
 		turnAngleText.value = 60 ;
 		recursionDepthText.value = 10 ;		
+		startAngleText.value = 0 ;
 	} else if( opt === 'tree' ) {
 		rulesText.value="A B[-A]+A\nB BB" 
 		turnAngleText.value = 45 ;
 		recursionDepthText.value = 10 ;		
+		startAngleText.value = 270 ;
 	} else {
 		rulesText.value="" ;
 		turnAngleText.value = "" ;
-		recursionDepthText.value = "" ;		
+		recursionDepthText.value = "" ;
+		startAngleText.value = "" ;				
 	}	
 }
 </script>
 
-<form>
-<textarea id='rules' rows='8' cols='20' placeholder='enter the l-system rules use WXYZ for non-drawing elements'></textarea>
-<input type="number" id='turn-angle' placeholder='Turn angle (degrees)'></input>
-<input type="number" id='recursion-depth' placeholder='Recursion depth - careful - exponential'></input>
-<button onclick='redraw(event)'>Draw</button>
-<select onchange='preset(this)'>
-	<option>select</option>
-	<option>grass</option>
-	<option>dragon</option>
-	<option>triangle</option>
-	<option>tree</option>
-</select>
-</form>
+	<div id='main'>
+		<div id='left'>
+			<canvas id="l-system" width="800" height="600"></canvas>
+		</div>
+		<div id='right'>
+			<form>
+				<textarea id='rules' rows='8' cols='20'
+					placeholder='enter the l-system rules use WXYZ for non-drawing elements'></textarea>
+				<input type="number" id='turn-angle'
+					placeholder='Turn angle (degrees)'></input> 
+				<input type="number"
+					id='start-angle'
+					placeholder='Initial angle'></input>
+				<input type="number"
+					id='recursion-depth'
+					placeholder='Recursion depth'></input>
+				<button onclick='redraw(event)'>Draw</button>
+				<select onchange='preset(this)'>
+					<option>select</option>
+					<option>grass</option>
+					<option>dragon</option>
+					<option>triangle</option>
+					<option>tree</option>
+				</select>
+			</form>
+		</div>
+	</div>
+
 </body>
 </html>
