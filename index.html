@@ -172,6 +172,11 @@ function preset(selection) {
 		turnAngleText.value = 60 ;
 		recursionDepthText.value = 10 ;		
 		startAngleText.value = 0 ;
+	} else if( opt === 'hilbert' ) {
+		rulesText.value="A -BF+AFA+FB-\nB +AF-BFB-FA+"
+		turnAngleText.value = 90 ;
+		recursionDepthText.value = 8 ;		
+		startAngleText.value = 0 ;
 	} else if( opt === 'tree' ) {
 		rulesText.value="A B[-A]+A\nB BB" 
 		turnAngleText.value = 45 ;
@@ -219,6 +224,7 @@ function preset(selection) {
 					<option>grass</option>
 					<option>dragon</option>
 					<option>triangle</option>
+					<option>hilbert</option>
 					<option>tree</option>
 					<option>circle</option>
 				</select>
