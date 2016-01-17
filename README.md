@@ -6,12 +6,12 @@ This page explores fractals defined with the [Lindenmayer](https://en.wikipedia.
 The grammar is recursive and supports drawing, moving and turning .
 
 Each step is named by a single letter
-[ means save the drawing state ( location and current angle )
-] restores the state
-- means turn left
-+ means turn right
-W, X, Y & Z move the current location (no drawing) forward based on the current angle, then recursively call steps W, X, Y or Z. 
-A, B ... V draw a line forward at the current angle, then recursively call the step
+- "[" means save the drawing state ( location and current angle )
+- "]" restores the state
+- "-" means turn left
+- "+" means turn right
+- W, X, Y & Z move the current location (no drawing) forward based on the current angle, then recursively call steps W, X, Y or Z. 
+- A, B ... V draw a line forward at the current angle, then recursively call the step
 
 
 Use the presets to see example grammars.
