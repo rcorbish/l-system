@@ -177,6 +177,11 @@ function preset(selection) {
 		turnAngleText.value = 90 ;
 		recursionDepthText.value = 8 ;		
 		startAngleText.value = 0 ;
+	} else if( opt === 'bush' ) {
+		rulesText.value="X FF+[+F]+[-F]\nF GFF-[-F+F]+[+F-F]\nG -H-H++HH"
+		turnAngleText.value = 35 ;
+		recursionDepthText.value = 6 ;		
+		startAngleText.value = 180 ;
 	} else if( opt === 'tree' ) {
 		rulesText.value="A B[-A]+A\nB BB" 
 		turnAngleText.value = 45 ;
@@ -223,6 +228,7 @@ function preset(selection) {
 					<option>select</option>
 					<option>grass</option>
 					<option>dragon</option>
+					<option>bush</option>
 					<option>triangle</option>
 					<option>hilbert</option>
 					<option>tree</option>
